@@ -24,6 +24,7 @@ def delete_columns(col_list):
 
 
 def format_col_names(col_list):
+    # treba pronaci sve kolone u kojima ima text i onda njih promijenit umjesto da se hardkodira lista
     for n in col_list:
         sheet[n].font = Font(color="FFFFFF", bold=True, size=12)
         sheet[n].fill = PatternFill("solid", start_color="215C98")
@@ -40,6 +41,19 @@ def extract_date(datum, novo_ime):
 
     for i in range(2, row_num + 1):
         sheet[f"{konacni_stupac}{i}"] = f"=LEFT({pocetni_stupac}{i},10)"
+
+    sheet.column_dimensions[pocetni_stupac].hidden = True
+    sheet.column_dimensions[konacni_stupac].width = 15
+
+
+def set_col_width():
+    indexi_kolona = [cell.column for cell in sheet[1]]
+    for c in indexi_kolona:
+        slovo_kolona = openpyxl.utils.cell.get_column_letter(c)
+        length = 0
+        for r in range(1, row_num):
+            length = max(length, len(str(sheet.cell(row=r, column=c).value)))
+        sheet.column_dimensions[slovo_kolona].width = length + 2
 
 
 kolone_za_brisanje = [
@@ -92,11 +106,11 @@ col_names = [
     "L1",
     "M1",
     "N1",
-    "O1",
 ]
 
 
 delete_columns(kolone_za_brisanje)
+set_col_width()
 extract_date("Start Text", "Datum unosa")
 format_col_names(col_names)
 
