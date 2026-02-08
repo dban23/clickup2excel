@@ -13,6 +13,7 @@ col_num = sheet.max_column
 
 # imena_kolona = [sheet.cell(row=1, column=i).value for i in range(1, col_num+1)]
 
+
 def delete_columns(col_list):
     imena_kolona = {cell.value: cell.column for cell in sheet[1]}
     indexi_kolona_za_brisanje = [imena_kolona.get(x) for x in col_list]
@@ -34,7 +35,7 @@ def extract_date(datum, novo_ime):
 
     sheet.insert_cols(index_datuma)
     sheet.cell(row=1, column=index_datuma, value=f"{novo_ime}")
-    pocetni_stupac = openpyxl.utils.cell.get_column_letter(index_datuma+1)
+    pocetni_stupac = openpyxl.utils.cell.get_column_letter(index_datuma + 1)
     konacni_stupac = openpyxl.utils.cell.get_column_letter(index_datuma)
 
     for i in range(2, row_num + 1):
