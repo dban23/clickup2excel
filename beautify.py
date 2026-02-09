@@ -30,20 +30,14 @@ def format_col_names(col_list):
         sheet[n].fill = PatternFill("solid", start_color="215C98")
 
 
-def extract_date(datum, novo_ime):
+def extract_date(datum):
     novi_dict_kolona = {cell.value: cell.column for cell in sheet[1]}
-    index_datuma = novi_dict_kolona.get(f"{datum}")
+    index_kolone = novi_dict_kolona.get(f"{datum}")
 
-    sheet.insert_cols(index_datuma)
-    sheet.cell(row=1, column=index_datuma, value=f"{novo_ime}")
-    pocetni_stupac = openpyxl.utils.cell.get_column_letter(index_datuma + 1)
-    konacni_stupac = openpyxl.utils.cell.get_column_letter(index_datuma)
-
-    for i in range(2, row_num + 1):
-        sheet[f"{konacni_stupac}{i}"] = f"=LEFT({pocetni_stupac}{i},10)"
-
-    sheet.column_dimensions[pocetni_stupac].hidden = True
-    sheet.column_dimensions[konacni_stupac].width = 15
+    for r in range(2, row_num):
+        sheet.cell(row=r, column=index_kolone).value = sheet.cell(
+            row=r, column=index_kolone
+        ).value.split(",")[0]
 
 
 def set_col_width():
@@ -56,13 +50,22 @@ def set_col_width():
         sheet.column_dimensions[slovo_kolona].width = length + 2
 
 
+def time_tracked():
+    novi_dict_kolona = {cell.value: cell.column for cell in sheet[1]}
+    index_kolone = novi_dict_kolona.get("Time Tracked")
+
+    for r in range(2, row_num):
+        sheet.cell(row=r, column=index_kolone).value = (
+            int(sheet.cell(row=r, column=index_kolone).value) / 3600000
+        )
+
+
 kolone_za_brisanje = [
     "User ID",
     "Time Entry ID",
     "Start",
     "Stop",
     "Stop Text",
-    "Time Tracked",
     "Space ID",
     "Folder ID",
     "List ID",
@@ -111,7 +114,8 @@ col_names = [
 
 delete_columns(kolone_za_brisanje)
 set_col_width()
-extract_date("Start Text", "Datum unosa")
+time_tracked()
+extract_date("Start Text")
 format_col_names(col_names)
 
 file.save("sati.xlsx")
